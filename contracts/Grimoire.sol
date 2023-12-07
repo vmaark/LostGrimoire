@@ -9,6 +9,12 @@ contract Grimoire {
     using strings for string;
     using strings for strings.slice;
 
+    struct WName {
+        string title;
+        string name;
+        string origin;
+    }
+
     string private constant traitNames =
         "Black-Blue-Green-Red-Card Magician-Desert Wear-Shoulder Cape Green-Shoulder Cape Red-Banded Overall-Brown Tunic-Grey Tunic-White Tunic-Blue Big Buckle-Green Big Buckle-Blue Lined Coveralls-Green Lined Coveralls-Space Chroma-Cape in the Wind-Green Caped Traveller-Orange Caped Traveller-Purple Caped Traveller-Spandex  Green-Spandex  Dark-Overcoat-Tech Coat-Deeze Body-Jester Diamonds-Double Sash-Blue Elven Cloak-Green Elven Cloak-Yellow Elven Cloak-Purple Yoga-Purple Yoga-Red Yoga-Rose Yoga-Blue Hip Pouch-Green Hip Pouch-Red Hip Pouch-Green Cloak-Purple Cloak-Formal Suit-Blue Coveralls-Brown Coveralls-Green Coveralls-Red Coveralls-White Coveralls-SupaFly-Gfunk-Gold Chain-Green Hip Scarf-Orange Hip Scarf-Cheetah Print-Ice Robe-Loopify-Red Cleric-Yellow Cleric-Pink Cosmic-Swashbuckling Gear-Poncho-Brown Harem Pants-Orange Harem Pants-Purple Harem Pants-Green Scholar-Orange Scholar-Rainbow Suit-Red Suit-All Seeing Robe-Green Mantle Robe-Purple Mantle Robe-Punker-Skeleton Flame-Gold Skeleton-Silver Skeleton-Tundra Wear-Dapper Formal-Cosmic Cardigan-Aristocrat Blue-Aristocrat Green-Aristocrat Purple-Two Tone Fringe-Skipper-Vest Blue-Vest Green-Celestial Sash-Wicker Wear-Black Wraith-White Wraith-Robe of Shadow-Forever Bat-Dirt Rabbit-Psychic Rabbit-Pink Butterfly-Bengal Cat-Lucky Black Cat-Sun Cat-Bliss Cat-Mesozoic Cockatrice-Crackerjack Crow-Pink Footed Crow-Field Dog-White Dog-Fox Trickster-3D Frog-Golden Toad-Swamp Bullfrog-Ember Frog-Jewled Hummingbird-Giant Ladybug-Merlin's Monkey-Great Owl-Blue Rat-Plague Rat-Albino Rat-Skramps-Sapphire Slime-Emerald Slime-Topaz Slime-Astral Snail-Golden Viper-Green Asp-Red Mamba-Ancient Sphinx-Rain Toucan-Onyx Wolf-Aura Wolf-Ascetic-Kabuki-Thelemist-Djinn-Kelt-ArtChick-Huntress-Floral Master-Woodland Shapeshifter-Bernardo-Enchantress-Evil One-BrainDrain-Skylord-Dark Sister-Felis-Cloud Prophet-Stranger-Claire Silver-Corvid-Great Old One-Black Mage-Arcadian Master-Deeze-Houngan-Dapper Arcanist-Bippadotta-Vampyre-Professor-Vegetable-Witch-Empress-Big Gross Eyeball-Flaming Skull-Swamp Witch-Eastern Arcanist-9272ETH-Cosmic Arcanist-GFunk Head-Dream Master-Gruffling-Hag-Hunter-Fiskantes-Hue Master-Illuminatus-Imp-Pumpkin Head-Wildman-Labyrinthian-Joey Billboard-Crone-Strongman-Koopling-Creol-Kempo-Loopify-Lycanthrope-MachoMan-Marlo-Warlock-Seer-Mambo-Olympian-Faustian-Coven Sister-Red Priestess-Myrddin-Canaanite-Death Eater-Fungus-Philosopher-Fortune Seeker-Botanic Master-Man Behind the Curtain-Anuran-Wooden Boy-Sandman-Durm and Strang-Swashbuckler-Rogue Arcanist-Animist-Bard-Charmer-Wild Woman-LeggoGreggo-Hermit-Astrologer-Medicine Man-Prophet-Scholar-WereBeast-Mandinka-Master of Wood, Water, and Hill-Punjabi-Polar Shapeshifter-Diviner-Dark Arcanist-Vamp-Darkling-Weird Wizz-Wicked Wizard-Blue Wizard-Brown Wizard-Green Wizard-Purple Wizard-Red Wizard-White Wizard-Yellow Wizard-Wolfkin-Kobold-Shaolin-Trickster-Astral Arcanist-Gold Skeleton-Cyborg Skeleton Arcanist-Cyborg Skeleton Rogue-Silver Skeleton-Tengu Preist-Fur Gnome-Mug of Ale-Isaac's Apple-Siren's Bell-Vile of Virgin's Blood-Book of Magic-Candle of Intuition-Ace in the Hole-Crystal Ball-Egg of Unknown Beast-Gorgon's Eye-Dragon Fireworks-Goblet of Immortality-Siren's Harp-Lucky Horseshoe-Sphinx's Hourglass-Key of the 7th Realm-Bag of Tricks-Green Mushroom-Red Mushroom-Shaman's Peyote-Phoenix Feather-Wizard's Pipe-Astral Potion-Cannabis Potion-Mandrake Potion-Nightshade Potion-Passion Potion-Chroma Crystal-Eternal Rose-Crystal Skull-Mystic Ice Cream-A dumb stick...-Prometheus's Torch-Venus Fly Trap-Flesh Eating Plant-The Midas Rod-The World Egg-Rune of Air-Rune of Brass-Rune of Brimstone-Rune of Cinnabar-Rune of Down-Rune of Earth-Rune of Fire-Rune of Infinity-Rune of Jupiter-Rune of Lime-Rune of Mars-Rune of Mercury-Rune of Neptune-Rune of Omega-Rune of Pluto-Rune of Saturn-Rune of Sigma-Rune of Steel-Rune of Sun-Rune of Up Only-Rune of Uranus-Rune of Venus-Rune of Water-Thor's Wrath: the Lightning Spell-Fairy Glamour: the Dazzle Spell-Grim Reaper's Breath: the Death Spell-The Gnome's Tooth: the Earth Spell-Salamander's Tongue: the Fire Spell-Hobgoblin's Flame: the Wayward Spell-Aphrodite's Heart: the Love Spell-Dryad's Ear: the Plant Spell-Loki's Bridge: the Rainbow Spell-Kelpie's Fury: the Water Spell-Zephyr's Laugh: the Wind Spell-Ruby Staff-Emerald Staff-The Orb Staff-A Big Magic Stick-The Bone Stave-Guillaume's Broom-Caduceus-Harmony Staff-Staff-Jinx Staff-Courage Staff-Peace Staff-Joy Staff-Ether Staff-Phosphorus Spear-Golden Bull Staff-Lunar Staff-Indigo Moon Staff-Chaos Staff-Soul Harvester-Golden Soul Reaper-The Mamba Stick-Stellar Staff-Solar Staff-Garnet Staff";
 
@@ -652,7 +658,7 @@ contract Grimoire {
     bytes32 public merkleRootTraitsTree;
     bytes32 public merkleRootNamesTree;
     mapping(uint256 => bytes) private wizardToTraits;
-    mapping(uint256 => string) private wizardToName;
+    mapping(uint256 => WName) private wizardToName;
     mapping(uint16 => uint16[]) private traitsToAffinities;
     mapping(uint16 => uint16[]) private traitsToIdentity;
     mapping(uint16 => uint16[]) private traitsToPositive;
@@ -668,7 +674,7 @@ contract Grimoire {
     // Store traits for a list of Wizards
     function storeWizardTraits(
         uint256 wizardId,
-        string calldata name,
+        WName calldata wName,
         uint16[] calldata traits,
         bytes32[] calldata proofsName,
         bytes32[] calldata proofsTraits
@@ -677,6 +683,7 @@ contract Grimoire {
         require(traits[0] == wizardId, "WizardsId to Trait mismatch");
         require(!hasTraitsStored[wizardId], "Traits are already stored");
 
+        string memory name = string(abi.encodePacked(wName.title, " ", wName.name, " ", wName.origin));
         require(
             _verifyName(proofsName, wizardId, name),
             "Merkle Proof for name is invalid!"
@@ -696,7 +703,7 @@ contract Grimoire {
             "Merkle Proof for traits is invalid!"
         );
 
-        wizardToName[wizardId] = name;
+        wizardToName[wizardId] = wName;
         wizardToTraits[wizardId] = encodedTraits;
         hasTraitsStored[wizardId] = true;
 
@@ -732,7 +739,7 @@ contract Grimoire {
     function getWizardName(uint256 wizardId)
         public
         view
-        returns (string memory)
+        returns (WName memory)
     {
         return wizardToName[wizardId];
     }

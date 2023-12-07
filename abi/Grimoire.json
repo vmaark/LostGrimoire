@@ -313,9 +313,26 @@
     "name": "getWizardName",
     "outputs": [
       {
-        "internalType": "string",
+        "components": [
+          {
+            "internalType": "string",
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "origin",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct Grimoire.WName",
         "name": "",
-        "type": "string"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -515,9 +532,26 @@
         "type": "uint256"
       },
       {
-        "internalType": "string",
-        "name": "name",
-        "type": "string"
+        "components": [
+          {
+            "internalType": "string",
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "origin",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct Grimoire.WName",
+        "name": "wName",
+        "type": "tuple"
       },
       {
         "internalType": "uint16[]",

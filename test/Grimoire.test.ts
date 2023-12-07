@@ -78,14 +78,19 @@ describe("Grimoire", function () {
         it("can store with valid proofs", async function () {
             let wizardId = 6725;
             let wizardTraits = [6725,0,28,110,190,332,288];
-            let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
+            let wName = {
+                title: "Ghost Eater",
+                name: "Bathsheba",
+                origin: "of the Toadstools"
+            }
+            let wizardName =  Object.values(wName).join(" ");
 
             let validProofTraits =  getProofForTraits(wizardTraits)
-            let validProofName =  getProofForName(wizardName)
+            let validProofName =  getProofForName(["6725", wizardName])
 
             await storage.storeWizardTraits(
                 wizardId, 
-                wizardName[1], 
+                wName, 
                 wizardTraits, 
                 validProofName, 
                 validProofTraits
@@ -100,7 +105,8 @@ describe("Grimoire", function () {
             expect(returnedTraits.t4).to.be.eq(wizardTraits[5])
             expect(returnedTraits.t5).to.be.eq(wizardTraits[6])
 
-            expect(await storage.getWizardName(wizardId)).to.be.eq(wizardName[1])
+            let wNameStruct = await storage.getWizardName(wizardId);
+            expect(`${wNameStruct.title} ${wNameStruct.name} ${wNameStruct.origin}`).to.be.eq(wizardName);
 
             expect(await storage.getWizardTraitsEncoded(wizardId)).to.be.eq("0x00001a450000001c006e00be014c0120");
 
@@ -110,12 +116,17 @@ describe("Grimoire", function () {
         it("can not store with invalid trait proof", async function () {
             let wizardId = 6725;
             let wizardTraits = [6725,1,2,3,4,5,6]; // invalid traits for wizard
-            let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
+            let wName = {
+                title: "Ghost Eater",
+                name: "Bathsheba",
+                origin: "of the Toadstools"
+            }
+            let wizardName = ["6725", Object.values(wName).join(" ")];
             let invalidProofTraits =  proofTraits(treeTraits, wizardTraits)
             let validProofName =  getProofForName(wizardName)
 
             await expect(
-                storage.storeWizardTraits(wizardId, wizardName[1], wizardTraits, validProofName, invalidProofTraits)
+                storage.storeWizardTraits(wizardId, wName, wizardTraits, validProofName, invalidProofTraits)
             ).to.be.revertedWith("Merkle Proof for traits is invalid!");
             
             expect(await storage.hasTraitsStored(wizardId)).to.be.false;
@@ -126,12 +137,18 @@ describe("Grimoire", function () {
         it("can not store with invalid name proof", async function () {
             let wizardId = 6725;
             let wizardTraits = [6725,0,28,110,190,332,288];
-            let wizardName = ["6725", "Mephistopheles"]; //invalid name
+            let wName = {
+                title: "",
+                name: "Mephistopheles",
+                origin: ""
+            }
+            let wizardName = ["6725", wName.title];
+
             let validProofTraits =  getProofForTraits(wizardTraits)
             let invalidProofName =  proofName(treeNames, wizardName)
 
             await expect(
-                storage.storeWizardTraits(wizardId, wizardName[1], wizardTraits, invalidProofName, validProofTraits)
+                storage.storeWizardTraits(wizardId, wName, wizardTraits, invalidProofName, validProofTraits)
             ).to.be.revertedWith("Merkle Proof for name is invalid!");
             
             expect(await storage.hasTraitsStored(wizardId)).to.be.false;
@@ -141,16 +158,21 @@ describe("Grimoire", function () {
         it("can not store twice", async function () {
             let wizardId = 6725;
             let wizardTraits = [6725,0,28,110,190,332,288];
-            let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
+            let wName = {
+                title: "Ghost Eater",
+                name: "Bathsheba",
+                origin: "of the Toadstools"
+            }
+            let wizardName = ["6725", Object.values(wName).join(" ")];
             let validProofTraits =  getProofForTraits(wizardTraits)
             let validProofName =  getProofForName(wizardName)
 
             //ok
-            await storage.storeWizardTraits(wizardId, wizardName[1], wizardTraits, validProofName, validProofTraits)
+            await storage.storeWizardTraits(wizardId, wName, wizardTraits, validProofName, validProofTraits)
 
             //second time nope
             await expect(
-                storage.storeWizardTraits(wizardId, wizardName[1], wizardTraits, validProofName, validProofTraits)
+                storage.storeWizardTraits(wizardId, wName, wizardTraits, validProofName, validProofTraits)
             ).to.be.revertedWith("Traits are already stored");
             
         }); 
@@ -158,20 +180,25 @@ describe("Grimoire", function () {
         it("can not store if submitted data is invalid", async function () {
             let wizardId = 6725;
             let wizardTraits = [6725,0,28,110,190,332];//last one missing
-            let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
+            let wName = {
+                title: "Ghost Eater",
+                name: "Bathsheba",
+                origin: "of the Toadstools"
+            }
+            let wizardName = ["6725", Object.values(wName).join(" ")];
             let validProofTraits =  getProofForTraits(wizardTraits)
             let validProofName =  getProofForName(wizardName)
 
             //invalid trait length
             await expect(
-                storage.storeWizardTraits(wizardId, wizardName[1], wizardTraits, validProofName, validProofTraits)
+                storage.storeWizardTraits(wizardId, wName, wizardTraits, validProofName, validProofTraits)
             ).to.be.revertedWith("Invalid Length");
 
             wizardTraits = [7777,0,28,110,190,332,288];
 
              //invalid wizard id in traits
              await expect(
-                storage.storeWizardTraits(wizardId, wizardName[1], wizardTraits, validProofName, validProofTraits)
+                storage.storeWizardTraits(wizardId, wName, wizardTraits, validProofName, validProofTraits)
             ).to.be.revertedWith("WizardsId to Trait mismatch");
             
         }); 
@@ -316,12 +343,17 @@ describe("Grimoire", function () {
 
             let wizardId = 6725;
             let wizardTraits = [6725,0,28,110,190,332,288];
-            let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
+            let wName = {
+                title: "Ghost Eater",
+                name: "Bathsheba",
+                origin: "of the Toadstools"
+            }
+            let wizardName = ["6725", Object.values(wName).join(" ")];
             let validProofTraits =  getProofForTraits(wizardTraits)
             let validProofName =  getProofForName(wizardName)
 
             //ok
-            await storage.storeWizardTraits(wizardId, wizardName[1], wizardTraits, validProofName, validProofTraits)
+            await storage.storeWizardTraits(wizardId, wName, wizardTraits, validProofName, validProofTraits)
 
         });
 
